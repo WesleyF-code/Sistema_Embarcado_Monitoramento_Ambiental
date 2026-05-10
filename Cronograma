@@ -1,1 +1,205 @@
+\documentclass[a4paper,12pt]{article}
 
+% ---------------- PACOTES ----------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath, amssymb}
+\usepackage{siunitx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{indentfirst}
+\usepackage{hyperref}
+\usepackage{array}
+
+\geometry{margin=2.5cm}
+
+% ---------------- INÍCIO ----------------
+\begin{document}
+
+% -------- CAPA --------
+\begin{titlepage}
+
+    % Logo
+    \noindent
+    \begin{minipage}[c]{0.18\textwidth}
+        \includegraphics[width=\linewidth]{png-logo-ufma-colorido.png}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[c]{0.78\textwidth}
+    \raggedright
+    {\small \textbf{UNIVERSIDADE FEDERAL DO MARANHÃO - UFMA\\
+    CENTRO DE CIÊNCIA EXATAS E TECNOLOGIA - CCET\\
+    ENGENHARIA DA COMPUTAÇÃO - EECP\\
+    ARQUITETURA DE COMPUTADORES
+    }}
+    \end{minipage}
+
+    \vspace{2cm}
+
+    % Título
+    \begin{center}
+    {\Large \textbf{Análise da Arquitetura de Computadores Aplicada a um Sistema
+Embarcado de Monitoramento Ambiental
+}}
+    \end{center}
+
+    \vspace{2cm}
+
+    % Discentes
+    \begin{center}
+    {\large Discentes:\\
+    \large \textbf{João Henrique Calixto Teixeira (2023030390)}\\
+    \large \textbf{Marcos Paulo Dominice Silva (2023030318)}\\
+    \large \textbf{Rai Abreu Machado (2023034498)}\\
+    \large \textbf{Ronald Loureiro Camara (2023034460)}\\
+    \large \textbf{Wesley Ferreira Costa (2023034442)}}\\
+    \end{center}
+
+    \vspace{1.5cm}
+
+    % Docente
+    \begin{center}
+    {\large Docente:\\
+    \textbf{Luiz Henrique Neves Rodrigues}}
+    \end{center}
+
+    \vfill
+
+    % Rodapé
+    \begin{center}
+    {\large \textbf{São Luís - MA}}\\
+    {\large \textbf{2026}}
+    \end{center}
+
+\end{titlepage}
+
+% -------- SUMÁRIO --------
+\tableofcontents
+\newpage
+% -------- SEÇÕES --------
+
+\section{Introdução}
+O presente projeto busca demonstrar, na prática, como os conceitos teóricos de arquitetura de computadores — incluindo os modelos de \textbf{Von
+Neumann}, \textbf{Harvard} e o conjunto de instruções (ISA) — são aplicados em microcontroladores modernos.
+A proposta se baseia no desenvolvimento de um sistema embarcado funcional voltado ao monitoramento ambiental/meteorológico, permitindo a coleta
+de dados reais e a análise comparativa entre diferentes arquiteturas de microcontroladores.
+Além disso, o projeto busca evidenciar a semelhança e evolução dessa
+arquitetura em relação aos modelos clássicos da computação, como a arquitetura de Von Neumann e os princípios da Máquina de Turing, conectando teoria
+e prática em um contexto aplicado.
+
+\section{Objetivos}
+
+\subsection{Objetivo Geral}
+Desenvolver e analisar um sistema embarcado de monitoramento ambiental, utilizando arquitetura de microcontroladores \textbf{AVR}, em específico o \textbf{MCU} \textbf{Arduino NANO}, uma placa de desenvolvimento baseada no chip \textbf{ATmega 328p} Fabricado pela empresa norte - americana \textbf{ATMEL Corporation}, com foco na comparação de sua arquitetura com a arquitetura clássica, tal qual estrutura e funcionamento interno.
+
+\subsection{Objetivos Específicos}
+\begin{itemize}
+    \item Desenvolver um sistema funcional capaz de coletar dados de:
+    \begin{enumerate}
+        \item Temperatura
+        \item Umidade
+        \item Pressão
+        \item Luminosidade
+        \item Qualidade do ar
+    \end{enumerate}
+
+    \item Analisar:
+    \begin{enumerate}
+        \item Protocolos de comunicação com dispositívos de entrada e saída (I/O)
+        \item Estrutura de processamento
+        \item Consumo energético
+    \end{enumerate}
+
+    \item Evidenciar as relações entre:
+    \begin{enumerate}
+        \item Arquitetura de Von Neumann
+        \item Máquina de Turing
+    \end{enumerate}
+
+    \item Produzir resultados experimentais com base em medições reais.
+\end{itemize}
+
+\section{Referencial Teórico}
+
+O principal referencial teórico utilizado para o desenvolvimento deste projeto, incluindo a elaboração de diagramas e a apresentação de imagens que descrevem o funcionamento da \textbf{CPU} e de seus registradores, bem como os protocolos de comunicação com dispositivos de \textbf{entrada e saída (I/O)}, o ciclo de clock da máquina e o consumo energético, baseia-se no datasheet do microcontrolador empregado.
+
+\begin{thebibliography}{9}
+
+\bibitem{atmega328p}
+MICROCHIP TECHNOLOGY INC. \textit{ATmega328P Datasheet}. Disponível em: \url{https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf}. Acesso em: 20 abr. 2026.
+
+\end{thebibliography}
+
+\section{Materiais e Metodologia}
+
+\subsection{Materiais}
+
+\begin{itemize}
+    \item \textbf{Arduino Nano (ATmega328P)} -- Placa de desenvolvimento baseada no microcontrolador ATmega328P, responsável pelo processamento dos dados e controle dos dispositivos utilizados no experimento.
+    
+    \item \textbf{BME280} -- Sensor digital capaz de medir temperatura, umidade e pressão atmosférica, utilizado para aquisição de dados ambientais.
+    
+    \item \textbf{BH1750} -- Sensor digital de luminosidade que fornece medições de intensidade luminosa em lux, utilizado para monitoramento da iluminação do ambiente.
+    
+    \item \textbf{MQ-135} -- Sensor de gases utilizado para detecção da qualidade do ar, sensível a compostos como amônia, óxidos de nitrogênio, álcool, benzeno e fumaça.
+\end{itemize}
+
+\subsection{Metodologia}
+O desenvolvimento do projeto será realizado de forma estruturada, seguindo as etapas descritas a seguir:
+
+\begin{enumerate}
+    \item \textbf{Estudo teórico das arquiteturas} -- Realização de levantamento bibliográfico sobre a arquitetura do microcontrolador ATmega328P, incluindo funcionamento da CPU, registradores, periféricos e protocolos de comunicação.
+    
+    \item \textbf{Montagem do circuito em protoboard} -- Implementação inicial do circuito utilizando uma protoboard, permitindo a conexão dos componentes de forma prática e sem necessidade de soldagem.
+    
+    \item \textbf{Integração dos sensores} -- Conexão dos sensores BME280, BH1750 e MQ-135 ao microcontrolador, utilizando interfaces adequadas, como comunicação I2C e entradas analógicas.
+    
+    \item \textbf{Desenvolvimento do firmware} -- Programação do microcontrolador utilizando linguagem \textbf{C/C++} por meio da plataforma \textbf{Arduino IDE}, visando a aquisição e processamento dos dados provenientes dos sensores.
+    
+    \item \textbf{Testes e validação} -- Verificação do funcionamento do sistema por meio de testes experimentais, garantindo a correta leitura dos sensores e a confiabilidade dos dados obtidos.
+    
+    \item \textbf{Coleta de dados experimentais} -- Registro das medições obtidas pelos sensores em diferentes condições ambientais, para posterior análise.
+    
+    \item \textbf{Análise comparativa} -- Avaliação dos dados coletados, comparando os resultados obtidos com valores esperados ou referências teóricas.
+    
+    \item \textbf{Documentação e apresentação} -- Organização dos resultados, elaboração do relatório técnico e preparação da apresentação final do projeto.
+\end{enumerate}
+
+\section{Cronograma}
+O desenvolvimento do projeto será realizado conforme o cronograma a seguir:
+
+\item \textbf{Abril}
+\begin{itemize}
+    \item 22/04 (Qua) -- Estudo teórico da arquitetura do microcontrolador ATmega328P.
+    \item 27/04 (Seg) -- Continuação do estudo teórico.
+    \item 29/04 (Qua) -- Definição dos protocolos de comunicação do projeto.
+\end{itemize}
+
+\item \textbf{Maio}
+\begin{itemize}
+    \item 04/05 (Seg) -- Planejamento do circuito.
+    \item 06/05 (Qua) -- Início da montagem em protoboard.
+    \item 11/05 (Seg) -- Integração dos sensores.
+    \item 13/05 (Qua) -- Continuação da integração dos sensores.
+    \item 18/05 (Seg) -- Desenvolvimento do firmware.
+    \item 20/05 (Qua) -- Leitura dos sensores e testes iniciais.
+    \item 25/05 (Seg) -- Ajustes no sistema.
+    \item 27/05 (Qua) -- Validação do funcionamento.
+\end{itemize}
+
+\item \textbf{Junho}
+\begin{itemize}
+    \item 01/06 (Seg) -- Coleta de dados experimentais.
+    \item 03/06 (Qua) -- Continuação da coleta de dados.
+    \item 08/06 (Seg) -- Organização dos dados.
+    \item 10/06 (Qua) -- Análise dos resultados.
+    \item 15/06 (Seg) -- Ajustes finais no sistema.
+    \item 17/06 (Qua) -- Elaboração do relatório técnico.
+    \item 22/06 (Seg) -- Apresentação final do projeto.
+\end{itemize}
+
+\end{document}

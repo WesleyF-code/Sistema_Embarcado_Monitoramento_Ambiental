@@ -297,15 +297,23 @@ Instale as seguintes bibliotecas pela IDE Arduino:
 
 # 💻 Funcionalidades
 
-*✅ Leitura de temperatura
-*✅ Leitura de umidade
-*✅ Leitura de pressão atmosférica
-*✅ Cálculo aproximado de altitude
-*✅ Leitura de luminosidade
-*✅ Comunicação I2C compartilhada
-*✅ Conversão analógico-digital via ADC
-*✅ Monitoramento relativo da qualidade do ar
-*✅ Exibição em tempo real no Monitor Serial
+✅ Leitura de temperatura
+
+✅ Leitura de umidade
+
+✅ Leitura de pressão atmosférica
+
+✅ Cálculo aproximado de altitude
+
+✅ Leitura de luminosidade
+
+✅ Comunicação I2C compartilhada
+
+✅ Conversão analógico-digital via ADC
+
+✅ Monitoramento relativo da qualidade do ar
+
+✅ Exibição em tempo real no Monitor Serial
 
 ---
 

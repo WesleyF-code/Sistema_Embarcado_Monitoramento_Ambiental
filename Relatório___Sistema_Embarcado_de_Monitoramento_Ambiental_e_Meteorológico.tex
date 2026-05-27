@@ -1,0 +1,841 @@
+\documentclass[a4paper,12pt]{article}
+
+% ---------------- PACOTES ----------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath, amssymb}
+\usepackage{siunitx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{indentfirst}
+\usepackage{hyperref}
+\usepackage{array}
+
+\geometry{margin=2.5cm}
+
+% ---------------- INÍCIO ----------------
+\begin{document}
+
+% -------- CAPA --------
+\begin{titlepage}
+
+    % Logo
+    \noindent
+    \begin{minipage}[c]{0.18\textwidth}
+        \includegraphics[width=\linewidth]{png-logo-ufma-colorido.png}
+        \end{minipage}
+    \hfill
+    \begin{minipage}[c]{0.78\textwidth}
+    \raggedright
+    {\small \textbf{UNIVERSIDADE FEDERAL DO MARANHÃO - UFMA\\
+    CENTRO DE CIÊNCIA EXATAS E TECNOLOGIA - CCET\\
+    ENGENHARIA DA COMPUTAÇÃO - EECP\\
+    ARQUITETURA DE COMPUTADORES
+    }}
+    \end{minipage}
+
+    \vspace{2cm}
+
+    % Título
+    \begin{center}
+    {\Large \textbf{Sistema Embarcado de Monitoramento Ambiental e Meteorológico}}
+    \end{center}
+
+    \vspace{2cm}
+
+    % Discentes
+    \begin{center}
+    {\large Discentes:\\
+    \large \textbf{}\\
+    \large \textbf{João Henrique Calixto Teixeira (2023030390)}\\
+    \large \textbf{Marcos Paulo Dominice Silva (2023030318)}\\
+    \large \textbf{Rai Abreu Machado (2023034498)}\\
+    \large \textbf{Ronald Loureiro Camara (2023034460)}\\
+    \large \textbf{Wesley Ferreira Costa (2023034442)}}\\
+    \end{center}
+
+    \vspace{1.5cm}
+
+    % Docente
+    \begin{center}
+    {\large Docente:\\
+    \textbf{Luiz Henrique Neves Rodrigues}}
+    \end{center}
+
+    \vfill
+
+    % Rodapé
+    \begin{center}
+    {\large \textbf{São Luís - MA}}\\
+    {\large \textbf{2026}}
+    \end{center}
+
+\end{titlepage}
+
+% -------- SUMÁRIO --------
+\tableofcontents
+\newpage
+% -------- SEÇÕES --------
+
+\section{Introdução}
+A arquitetura de Von Neumann constitui uma das bases fundamentais da computação moderna, estabelecendo a organização clássica de sistemas computacionais através da divisão entre entrada de dados, processamento, memória e saída de informações. Mesmo após décadas de sua proposição, seus princípios continuam presentes em computadores modernos, microcontroladores e sistemas embarcados.
+
+Nesse contexto, o presente trabalho apresenta o desenvolvimento de um sistema embarcado de monitoramento ambiental utilizando o Arduino Nano, baseado no microcontrolador ATmega328P, com o objetivo principal de demonstrar na prática a aplicação dos conceitos da arquitetura clássica de Von Neumann em um sistema computacional real.
+
+O projeto foi desenvolvido utilizando sensores responsáveis pela aquisição de dados ambientais, incluindo temperatura, umidade relativa do ar, pressão atmosférica, altitude aproximada, luminosidade e qualidade relativa do ar. Para isso, foram utilizados os sensores BME280, BH1750 e MQ-135, integrados ao microcontrolador através de diferentes formas de comunicação e aquisição de dados.
+
+Os sensores digitais BME280 e BH1750 utilizam o protocolo I2C para transferência de informações ao microcontrolador, enquanto o sensor MQ-135 opera através de um sinal analógico variável, exigindo a utilização do conversor analógico-digital (ADC) interno do ATmega328P. Dessa forma, o projeto também demonstra o funcionamento do processo de conversão de sinais analógicos em dados digitais dentro de um sistema computacional embarcado.
+
+Durante a execução do sistema, os sensores atuam como dispositivos de entrada, fornecendo dados ambientais ao microcontrolador. O ATmega328P realiza o processamento dessas informações através do firmware desenvolvido em linguagem C/C++, utilizando sua unidade de processamento e memória interna para interpretar os dados recebidos. Após o processamento, as informações são enviadas ao Monitor Serial, caracterizando a etapa de saída de dados do sistema.
+
+Além da aquisição e exibição das informações ambientais, o projeto permite observar, na prática, diversos elementos presentes na arquitetura clássica de Von Neumann, como:
+
+\begin{itemize}
+    \item Entrada de dados através dos sensores;
+    \item Processamento centralizado pelo microcontrolador;
+    \item Utilização de memória para armazenamento de instruções e variáveis;
+    \item Comunicação entre periféricos e processador;
+    \item Saída de informações processadas.
+\end{itemize}
+
+Assim, o sistema desenvolvido serve como uma aplicação prática dos conceitos estudados em arquitetura de computadores, permitindo relacionar os fundamentos teóricos da arquitetura de Von Neumann com a implementação real de um sistema embarcado baseado em aquisição, processamento e exibição de dados ambientais.
+
+\section{Objetivos}
+O presente projeto tem como objetivo desenvolver um sistema embarcado de monitoramento ambiental utilizando o Arduino Nano baseado no microcontrolador ATmega328P, visando demonstrar, na prática, a aplicação dos conceitos de arquitetura de computadores e realizar uma análise comparativa entre a arquitetura utilizada pelo microcontrolador e a arquitetura clássica de Von Neumann.
+
+Para isso, o sistema foi projetado para realizar a aquisição e processamento de dados ambientais por meio dos sensores BME280, BH1750 e MQ-135, permitindo a coleta de informações relacionadas à temperatura, umidade, pressão atmosférica, luminosidade e qualidade relativa do ar.
+
+Além do desenvolvimento do sistema funcional, o projeto busca analisar aspectos relacionados ao funcionamento interno do microcontrolador, incluindo comunicação com dispositivos de entrada e saída, processamento de dados, utilização de memória e conversão analógico-digital, estabelecendo relações entre os conceitos teóricos estudados em arquitetura de computadores e sua aplicação prática em sistemas embarcados.
+
+\section{Referencial Teórico}
+O desenvolvimento do presente projeto fundamenta-se em conceitos relacionados à arquitetura de computadores, sistemas embarcados, aquisição de dados, comunicação serial e processamento digital de sinais. Para a implementação do sistema de monitoramento ambiental, foram utilizados como principais referências técnicas os datasheets do microcontrolador ATmega328P e dos sensores BME280, BH1750 e MQ-135.
+
+\subsection{Arquitetura de Von Neumann}
+
+A arquitetura de Von Neumann constitui um dos principais modelos computacionais utilizados na construção de sistemas digitais modernos. Esse modelo define uma estrutura composta por:
+\begin{itemize}
+    \item Unidade Central de Processamento (CPU);
+    \item Memória;
+    \item Dispositivos de entrada;
+    \item Dispositivos de saída;
+    \item Barramentos de comunicação.
+\end{itemize}
+
+Na arquitetura proposta por Von Neumann, tanto dados quanto instruções compartilham o mesmo espaço de memória e são processados sequencialmente pela CPU.
+
+No projeto desenvolvido, os sensores atuam como dispositivos de entrada de dados, enquanto o ATmega328P realiza o processamento das informações adquiridas. A memória interna do microcontrolador armazena as instruções do firmware e as variáveis utilizadas durante a execução do sistema, enquanto o Monitor Serial atua como interface de saída de dados.
+
+Assim, o sistema desenvolvido permite observar, na prática, os principais elementos presentes na arquitetura clássica de Von Neumann aplicados em um sistema embarcado moderno.
+
+\subsection{Microcontrolador ATmega328P}
+
+O ATmega328P é um microcontrolador de 8 bits baseado na arquitetura AVR RISC, desenvolvido pela Atmel. Segundo o datasheet do fabricante, o dispositivo possui arquitetura RISC avançada, 32 registradores de propósito geral e capacidade de execução próxima de 1 MIPS por MHz.
+
+O microcontrolador utilizado no projeto encontra-se integrado à plataforma Arduino Nano, responsável pelo gerenciamento dos sensores e pelo processamento dos dados ambientais coletados.
+
+De acordo com o datasheet, o ATmega328P possui:
+\begin{itemize}
+    \item 32 KB de memória Flash;
+    \item 2 KB de SRAM;
+    \item 1 KB de EEPROM;
+    \item Conversor analógico-digital (ADC) de 10 bits;
+    \item Interface serial I2C (TWI);
+    \item Interface USART;
+    \item Temporizadores internos;
+    \item 23 linhas de entrada e saída digitais.
+\end{itemize}
+
+No sistema desenvolvido, o ATmega328P é responsável por:
+\begin{itemize}
+    \item Realizar aquisição de dados ambientais;
+    \item Executar comunicação I2C;
+    \item Executar conversão analógico-digital;
+    \item Processar os dados dos sensores;
+    \item Classificar a qualidade relativa do ar;
+    \item Exibir informações no Monitor Serial.
+\end{itemize}
+
+\subsection{Comunicação I2C}
+
+O protocolo I2C (\textit{Inter-Integrated Circuit}) é um barramento serial síncrono utilizado para comunicação entre dispositivos eletrônicos.
+
+Esse protocolo utiliza apenas duas linhas de comunicação:
+\begin{itemize}
+    \item SDA (\textit{Serial Data});
+    \item SCL (\textit{Serial Clock}).
+\end{itemize}
+
+Segundo o datasheet do ATmega328P, o microcontrolador possui interface TWI compatível com o protocolo I2C.
+
+No projeto desenvolvido, os sensores BME280 e BH1750 compartilham o mesmo barramento I2C do Arduino Nano, utilizando diferentes endereços lógicos para comunicação com o microcontrolador.
+
+A utilização do protocolo I2C reduz a quantidade de conexões físicas necessárias no sistema e demonstra a comunicação entre múltiplos periféricos digitais em sistemas embarcados.
+
+\subsection{Sensor BME280}
+
+O BME280 é um sensor digital desenvolvido pela Bosch Sensortec, capaz de realizar medições de:
+\begin{itemize}
+    \item Temperatura;
+    \item Umidade relativa do ar;
+    \item Pressão atmosférica.
+\end{itemize}
+
+A partir da pressão atmosférica, também é possível estimar a altitude aproximada.
+
+Segundo o datasheet do fabricante, o BME280 realiza internamente ciclos de medição compostos por:
+\begin{enumerate}
+    \item Medição de temperatura;
+    \item Medição de pressão;
+    \item Medição de umidade;
+    \item Filtragem opcional dos dados.
+\end{enumerate}
+
+O sensor permite utilização de técnicas de \textit{oversampling} para redução de ruído nas medições. Além disso, possui filtro IIR interno para suavização de variações rápidas de pressão e temperatura.
+
+No sistema desenvolvido, o BME280 opera realizando medições contínuas e disponibilizando os dados através da interface I2C.
+
+A utilização do BME280 demonstra a integração entre sensores digitais inteligentes e sistemas embarcados.
+
+\subsection{Sensor BH1750}
+
+O BH1750 é um sensor digital de luminosidade responsável pela medição da intensidade luminosa ambiente em lux.
+
+O sensor utiliza comunicação I2C para envio das informações ao microcontrolador, compartilhando o barramento com o BME280.
+
+Internamente, o BH1750 realiza a conversão da intensidade luminosa em dados digitais, permitindo que o ATmega328P apenas solicite os valores medidos através da interface serial.
+
+No projeto desenvolvido, o BH1750 representa um periférico digital dedicado à aquisição de luminosidade ambiente.
+
+\subsection{Sensor MQ-135}
+
+O MQ-135 é um sensor analógico utilizado para monitoramento relativo da qualidade do ar.
+
+Segundo o datasheet do fabricante, o sensor é capaz de detectar gases como:
+\begin{itemize}
+    \item NH$_3$;
+    \item NOx;
+    \item Álcool;
+    \item Benzeno;
+    \item Fumaça;
+    \item CO$_2$.
+\end{itemize}
+
+O sensor possui:
+\begin{itemize}
+    \item Camada semicondutora de dióxido de estanho (SnO$_2$);
+    \item Aquecedor interno;
+    \item Circuito resistivo sensível a gases.
+\end{itemize}
+
+Seu funcionamento baseia-se na variação da resistência elétrica interna do material semicondutor quando exposto a diferentes concentrações de gases.
+
+De acordo com o datasheet:
+\begin{itemize}
+    \item a resistência do aquecedor é aproximadamente 33$\Omega$;
+    \item o sensor opera com alimentação de 5V;
+    \item o tempo recomendado de pré-aquecimento é superior a 24 horas.
+\end{itemize}
+
+O MQ-135 fornece um sinal analógico contínuo ao microcontrolador, sendo necessária a utilização do ADC interno do ATmega328P para interpretação dos dados.
+
+O datasheet também apresenta curvas de sensibilidade baseadas na razão:
+
+\[
+\frac{R_s}{R_o}
+\]
+
+Onde:
+\begin{itemize}
+    \item $R_s$ representa a resistência atual do sensor;
+    \item $R_o$ representa a resistência do sensor em ambiente calibrado.
+\end{itemize}
+
+Essas curvas permitem estimar concentrações relativas de gases em ppm.
+
+\subsection{Conversão Analógico-Digital (ADC)}
+
+O conversor analógico-digital (ADC) é responsável por transformar sinais analógicos contínuos em valores digitais processáveis pelo sistema computacional.
+
+Segundo o datasheet do ATmega328P, o microcontrolador possui ADC de 10 bits com até 8 canais analógicos.
+
+No Arduino Nano, o MQ-135 encontra-se conectado ao pino A0, fornecendo uma tensão analógica variável proporcional à concentração relativa de gases.
+
+O ADC converte tensões entre 0V e 5V em valores digitais entre 0 e 1023.
+
+A conversão pode ser representada por:
+
+\[
+ADC = \frac{V_{in}}{V_{ref}} \times 1023
+\]
+
+Onde:
+\begin{itemize}
+    \item $V_{in}$ representa a tensão analógica aplicada na entrada;
+    \item $V_{ref}$ representa a tensão de referência do ADC.
+\end{itemize}
+
+Como o ADC possui resolução de 10 bits:
+
+\[
+2^{10} = 1024
+\]
+
+Assim:
+\begin{itemize}
+    \item 0V corresponde a 0;
+    \item 5V corresponde a 1023.
+\end{itemize}
+
+No firmware desenvolvido, a leitura é realizada através da função:
+
+\begin{verbatim}
+analogRead(MQ135_PIN);
+\end{verbatim}
+
+O valor digital obtido é utilizado pelo sistema para classificar a qualidade relativa do ar em diferentes níveis.
+
+\subsection{Sistemas Embarcados}
+
+Sistemas embarcados são sistemas computacionais desenvolvidos para executar funções específicas dentro de dispositivos eletrônicos.
+
+Diferentemente de computadores de propósito geral, sistemas embarcados possuem:
+\begin{itemize}
+    \item Hardware dedicado;
+    \item Baixo consumo energético;
+    \item Processamento específico;
+    \item Integração entre software e hardware.
+\end{itemize}
+
+No projeto desenvolvido, o Arduino Nano atua como sistema embarcado responsável pelo gerenciamento dos sensores, aquisição dos dados ambientais e processamento das informações em tempo real.
+
+O sistema implementado demonstra conceitos fundamentais de:
+\begin{itemize}
+    \item integração hardware/software;
+    \item aquisição de dados;
+    \item processamento digital;
+    \item comunicação entre periféricos;
+    \item arquitetura de computadores.
+\end{itemize}
+
+Além disso, o projeto evidencia a aplicação prática da arquitetura de Von Neumann em sistemas embarcados modernos.
+
+\section{Materiais e Metodologia}
+
+\subsection{Materiais}
+
+\begin{enumerate}
+
+    \item \textbf{Arduino Nano} -- Plataforma de desenvolvimento baseada no microcontrolador ATmega328P, responsável pelo processamento dos dados, gerenciamento dos sensores e execução do firmware do sistema embarcado.
+    
+    \item \textbf{Protoboard} -- Placa de prototipagem utilizada para montagem do circuito eletrônico sem a necessidade de soldagem, permitindo conexões rápidas entre os componentes do sistema.
+    
+    \item \textbf{Sensor BME280} -- Sensor digital utilizado para medição de temperatura, umidade relativa do ar e pressão atmosférica, além da estimativa aproximada de altitude.
+    
+    \item \textbf{Sensor BH1750} -- Sensor digital utilizado para medição da intensidade luminosa ambiente em lux.
+    
+    \item \textbf{Sensor MQ-135} -- Sensor analógico utilizado para monitoramento relativo da qualidade do ar através da detecção de gases e compostos voláteis presentes no ambiente.
+    
+    \item \textbf{Jumpers} -- Fios condutores utilizados para realizar as conexões elétricas entre o Arduino Nano, sensores e protoboard.
+    
+    \item \textbf{Cabo USB} -- Utilizado para alimentação do Arduino Nano e comunicação serial com o computador durante a programação e monitoramento dos dados.
+    
+    \item \textbf{Computador} -- Equipamento utilizado para desenvolvimento do firmware, gravação do código no microcontrolador e visualização dos dados através do Monitor Serial da IDE Arduino.
+    
+    \item \textbf{IDE Arduino} -- Ambiente de desenvolvimento utilizado para escrita, compilação e upload do firmware para o microcontrolador ATmega328P.
+    
+\end{enumerate}
+\subsection{Metodologia}
+
+Inicialmente, foi realizada a montagem do circuito eletrônico em protoboard, integrando os sensores BME280, BH1750 e MQ-135 ao sistema embarcado.
+
+Os sensores BME280 e BH1750 foram conectados utilizando o protocolo de comunicação I2C, compartilhando as linhas SDA e SCL do microcontrolador. Já o sensor MQ-135 foi integrado através de sua saída analógica, conectada ao pino A0 para utilização do conversor analógico-digital (ADC).
+
+A Tabela \ref{tab:bme280} apresenta as conexões utilizadas no sensor BME280.
+
+\begin{table}[H]
+\centering
+\caption{Conexões do sensor BME280}
+\label{tab:bme280}
+\begin{tabular}{|c|c|}
+\hline
+\textbf{BME280} & \textbf{Conexão} \\ \hline
+VIN & 3V3 \\ \hline
+GND & GND \\ \hline
+SDA & A4 \\ \hline
+SCL & A5 \\ \hline
+\end{tabular}
+\end{table}
+
+A Tabela \ref{tab:bh1750} apresenta as conexões utilizadas no sensor BH1750.
+
+\begin{table}[H]
+\centering
+\caption{Conexões do sensor BH1750}
+\label{tab:bh1750}
+\begin{tabular}{|c|c|}
+\hline
+\textbf{BH1750} & \textbf{Conexão} \\ \hline
+VCC & 3V3 \\ \hline
+GND & GND \\ \hline
+SDA & A4 \\ \hline
+SCL & A5 \\ \hline
+ADDR & GND \\ \hline
+\end{tabular}
+\end{table}
+
+O sensor MQ-135 foi conectado conforme apresentado na Tabela \ref{tab:mq135}.
+
+\begin{table}[H]
+\centering
+\caption{Conexões do sensor MQ-135}
+\label{tab:mq135}
+\begin{tabular}{|c|c|}
+\hline
+\textbf{MQ-135} & \textbf{Conexão} \\ \hline
+VCC & 5V \\ \hline
+GND & GND \\ \hline
+AO & A0 \\ \hline
+\end{tabular}
+\end{table}
+
+Após a montagem física do circuito, foi desenvolvido o firmware responsável pela inicialização dos sensores, aquisição dos dados ambientais, processamento das informações e exibição dos resultados no Monitor Serial.
+
+Para comunicação com os sensores digitais, foram utilizadas as bibliotecas:
+\begin{itemize}
+    \item \texttt{Wire.h};
+    \item \texttt{Adafruit\_Sensor.h};
+    \item \texttt{Adafruit\_BME280.h};
+    \item \texttt{BH1750.h}.
+\end{itemize}
+
+O sensor BME280 foi inicializado utilizando o endereço I2C \texttt{0x76}, enquanto o BH1750 operou utilizando seu endereço padrão \texttt{0x23}.
+
+Durante a execução do firmware, o sistema realiza leituras periódicas de:
+\begin{itemize}
+    \item temperatura;
+    \item umidade relativa do ar;
+    \item pressão atmosférica;
+    \item altitude aproximada;
+    \item luminosidade ambiente;
+    \item qualidade relativa do ar.
+\end{itemize}
+
+A leitura do sensor MQ-135 foi realizada através da função:
+
+\begin{verbatim}
+analogRead(MQ135_PIN);
+\end{verbatim}
+
+O valor analógico fornecido pelo sensor é convertido pelo ADC de 10 bits do microcontrolador em um valor digital entre 0 e 1023.
+
+Após a conversão analógico-digital, o firmware realiza uma classificação relativa da qualidade do ar conforme intervalos previamente definidos no código.
+
+A Tabela \ref{tab:qualidade_ar} apresenta os níveis utilizados no sistema.
+
+\begin{table}[H]
+\centering
+\caption{Classificação relativa da qualidade do ar}
+\label{tab:qualidade_ar}
+\begin{tabular}{|c|c|}
+\hline
+\textbf{Faixa ADC} & \textbf{Classificação} \\ \hline
+0 -- 250 & Boa \\ \hline
+251 -- 450 & Moderada \\ \hline
+451 -- 700 & Ruim \\ \hline
+Acima de 700 & Crítica \\ \hline
+\end{tabular}
+\end{table}
+
+O firmware final utilizado no projeto é apresentado a seguir.
+
+\begin{verbatim}
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BME280.h>
+#include <BH1750.h>
+
+// =========================
+// OBJETOS DOS SENSORES
+// =========================
+
+Adafruit_BME280 bme;
+BH1750 lightMeter;
+
+// =========================
+// CONFIGURAÇÕES
+// =========================
+
+#define SEALEVELPRESSURE_HPA (1013.25)
+
+// Pino analógico do MQ-135
+#define MQ135_PIN A0
+
+// Variável para verificar se o BME280 foi encontrado
+bool bmeStatus = false;
+
+
+// =========================
+// FUNÇÃO: CLASSIFICAÇÃO DO AR
+// =========================
+
+String classificarQualidadeAr(int valor) {
+
+  if (valor <= 250) {
+
+    return "BOA";
+
+  }
+
+  else if (valor <= 450) {
+
+    return "MODERADA";
+
+  }
+
+  else if (valor <= 700) {
+
+    return "RUIM";
+
+  }
+
+  else {
+
+    return "CRITICA";
+
+  }
+
+}
+
+
+// =========================
+// SETUP
+// =========================
+
+void setup() {
+
+  Serial.begin(9600);
+  Wire.begin();
+
+  Serial.println("====================================");
+  Serial.println(" SISTEMA DE MONITORAMENTO AMBIENTAL ");
+  Serial.println("====================================");
+
+  // =========================
+  // Inicialização BME280
+  // =========================
+
+  bmeStatus = bme.begin(0x76);
+
+  if (!bmeStatus) {
+
+    Serial.println("Erro ao encontrar o BME280!");
+    Serial.println("Verifique conexoes e endereco I2C.");
+    Serial.println();
+
+  }
+
+  else {
+
+    Serial.println("BME280 inicializado com sucesso!");
+
+  }
+
+  // =========================
+  // Inicialização BH1750
+  // =========================
+
+  lightMeter.begin();
+
+  Serial.println("BH1750 inicializado com sucesso!");
+
+  // =========================
+  // Inicialização MQ-135
+  // =========================
+
+  pinMode(MQ135_PIN, INPUT);
+
+  Serial.println("MQ-135 inicializado com sucesso!");
+
+  Serial.println();
+
+}
+
+
+// =========================
+// LOOP PRINCIPAL
+// =========================
+
+void loop() {
+
+  Serial.println("========== DADOS AMBIENTAIS ==========");
+  Serial.println();
+
+  // =========================
+  // BME280
+  // =========================
+
+  if (bmeStatus) {
+
+    float temperatura = bme.readTemperature();
+    float umidade = bme.readHumidity();
+    float pressao = bme.readPressure() / 100.0F;
+    float altitude = bme.readAltitude(SEALEVELPRESSURE_HPA);
+
+    Serial.print("Temperatura: ");
+    Serial.print(temperatura);
+    Serial.println(" C");
+
+    Serial.print("Umidade: ");
+    Serial.print(umidade);
+    Serial.println(" %");
+
+    Serial.print("Pressao: ");
+    Serial.print(pressao);
+    Serial.println(" hPa");
+
+    Serial.print("Altitude Aproximada: ");
+    Serial.print(altitude);
+    Serial.println(" m");
+
+  }
+
+  else {
+
+    Serial.println("BME280 indisponivel.");
+
+  }
+
+  Serial.println();
+
+  // =========================
+  // BH1750
+  // =========================
+
+  float luminosidade = lightMeter.readLightLevel();
+
+  Serial.print("Luminosidade: ");
+  Serial.print(luminosidade);
+  Serial.println(" lux");
+
+  Serial.println();
+
+  // =========================
+  // MQ-135
+  // =========================
+
+  int qualidadeAr = analogRead(MQ135_PIN);
+
+  Serial.print("Qualidade do Ar: ");
+  Serial.print(qualidadeAr);
+
+  Serial.print("  [");
+
+  Serial.print(classificarQualidadeAr(qualidadeAr));
+
+  Serial.println("]");
+
+  Serial.println();
+
+  Serial.println("======================================");
+  Serial.println();
+
+  delay(2000);
+
+}
+\end{verbatim}
+
+Após o processamento das informações ambientais, os dados são exibidos em tempo real através do Monitor Serial da IDE Arduino.
+
+A saída serial utilizada pelo sistema é apresentada a seguir.
+
+\begin{verbatim}
+========== DADOS AMBIENTAIS ==========
+
+Temperatura: 27.4 C
+Umidade: 63.2 %
+Pressao: 1008.4 hPa
+Altitude Aproximada: 42.7 m
+
+Luminosidade: 315.0 lux
+
+Qualidade do Ar: 412 [MODERADA]
+
+======================================
+\end{verbatim}
+
+Após a implementação do firmware, foram realizados testes individuais e integrados dos sensores, verificando o correto funcionamento da comunicação I2C, da leitura analógica do MQ-135 e da exibição das informações ambientais no Monitor Serial.
+
+\section{Resultados e Discussão}
+
+Após a implementação completa do sistema embarcado, foi realizado um processo contínuo de aquisição de dados ambientais durante um intervalo de 1 hora, compreendido entre 16:30h e 17:30h.
+
+Durante esse período, o firmware executou leituras periódicas dos sensores BME280, BH1750 e MQ-135, registrando informações referentes à:
+\begin{itemize}
+    \item temperatura;
+    \item umidade relativa do ar;
+    \item pressão atmosférica;
+    \item luminosidade ambiente;
+    \item qualidade relativa do ar.
+\end{itemize}
+
+Os dados coletados foram armazenados através do Monitor Serial da IDE Arduino e posteriormente exportados para um arquivo de texto (\texttt{.txt}). Após a aquisição, os dados foram processados utilizando a linguagem Python e a biblioteca \texttt{Matplotlib}, responsável pela geração dos gráficos temporais utilizados na análise experimental.
+
+Para construção dos gráficos, foi utilizado um vetor temporal contendo 15 amostras distribuídas uniformemente ao longo de 60 minutos. O módulo \texttt{datetime} foi utilizado para associação dos horários às leituras registradas, permitindo representar a evolução temporal das variáveis ambientais monitoradas.
+
+\subsection{Análise da Temperatura}
+
+A Figura \ref{fig:temperatura} apresenta o comportamento da temperatura ambiente durante o período de monitoramento.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\linewidth]{temperatura.png}
+    \caption{Variação da temperatura entre 16:30h e 17:30h}
+    \label{fig:temperatura}
+\end{figure}
+
+Observa-se um crescimento gradual da temperatura ao longo do tempo, partindo de aproximadamente 28,4°C e atingindo valores próximos de 29,3°C.
+
+Esse comportamento pode estar associado ao aquecimento natural do ambiente e também à dissipação térmica produzida pelos próprios componentes eletrônicos durante o funcionamento contínuo do sistema.
+
+As pequenas oscilações observadas demonstram a estabilidade do sensor BME280 e a consistência das leituras realizadas através da comunicação I2C.
+
+\subsection{Análise da Umidade Relativa do Ar}
+
+A Figura \ref{fig:umidade} apresenta a variação da umidade relativa do ar durante o experimento.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\linewidth]{umidade.png}
+    \caption{Variação da umidade relativa do ar entre 16:30h e 17:30h}
+    \label{fig:umidade}
+\end{figure}
+
+Os resultados demonstram uma redução gradual da umidade relativa ao longo do intervalo monitorado, variando de aproximadamente 76\% para valores próximos de 72\%.
+
+Esse comportamento apresenta relação direta com o aumento da temperatura observado anteriormente, uma vez que temperaturas mais elevadas reduzem a umidade relativa do ar.
+
+A estabilidade da curva obtida demonstra o correto funcionamento do sistema de aquisição de dados implementado no firmware.
+
+\subsection{Análise da Pressão Atmosférica}
+
+A Figura \ref{fig:pressao} apresenta os valores de pressão atmosférica registrados pelo sistema.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\linewidth]{pressão_atmosférica.png}
+    \caption{Variação da pressão atmosférica entre 16:30h e 17:30h}
+    \label{fig:pressao}
+\end{figure}
+
+Os dados indicam pequenas variações em torno de 1008 hPa e 1009 hPa, comportamento esperado para intervalos curtos de monitoramento.
+
+A baixa variação observada evidencia a estabilidade do sensor BME280 e demonstra a capacidade do sistema em realizar medições contínuas de grandezas ambientais com baixa interferência.
+
+\subsection{Análise da Luminosidade}
+
+A Figura \ref{fig:luminosidade} apresenta a variação da luminosidade ambiente registrada pelo sensor BH1750.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\linewidth]{luminosidade.png}
+    \caption{Variação da luminosidade entre 16:30h e 17:30h}
+    \label{fig:luminosidade}
+\end{figure}
+
+Observa-se uma redução significativa da intensidade luminosa ao longo do período analisado, com valores reduzindo de aproximadamente 155 lux para cerca de 10 lux.
+
+Esse comportamento está associado à diminuição gradual da iluminação natural no ambiente durante o final da tarde.
+
+O gráfico evidencia o correto funcionamento do sensor BH1750 e da comunicação digital via protocolo I2C utilizada pelo sistema.
+
+\subsection{Análise da Qualidade Relativa do Ar}
+
+A Figura \ref{fig:qualidade_ar} apresenta os dados relativos à qualidade do ar obtidos pelo sensor MQ-135.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\linewidth]{qualidade_do_ar.png}
+    \caption{Variação da qualidade relativa do ar entre 16:30h e 17:30h}
+    \label{fig:qualidade_ar}
+\end{figure}
+
+As leituras permaneceram em níveis baixos durante todo o período de aquisição, variando aproximadamente entre 37 e 61 unidades digitais do ADC.
+
+Os valores registrados permaneceram dentro da faixa classificada pelo firmware como qualidade do ar ``BOA'', indicando baixa concentração relativa de gases detectáveis no ambiente monitorado.
+
+Além disso, o comportamento do gráfico demonstra o funcionamento do processo de conversão analógico-digital realizado pelo ADC de 10 bits do microcontrolador. O sinal analógico fornecido pelo MQ-135 foi convertido em valores digitais entre 0 e 1023, permitindo que o firmware processasse as informações e classificasse a qualidade relativa do ar.
+
+\subsection{Discussão Geral dos Resultados}
+
+Os resultados obtidos demonstram o funcionamento integrado do sistema embarcado desenvolvido, evidenciando a comunicação entre sensores digitais e analógicos, processamento de dados e exibição das informações ambientais em tempo real.
+
+O sistema apresentou estabilidade durante todo o período de aquisição, sem falhas de comunicação I2C ou inconsistências relevantes nas leituras realizadas.
+
+Além disso, os resultados permitem observar na prática os principais elementos da arquitetura clássica de Von Neumann aplicados ao sistema desenvolvido:
+\begin{itemize}
+    \item os sensores atuam como dispositivos de entrada;
+    \item o ATmega328P realiza o processamento dos dados;
+    \item a memória interna armazena instruções e variáveis do firmware;
+    \item o Monitor Serial atua como dispositivo de saída.
+\end{itemize}
+
+O projeto também demonstra a integração entre sinais digitais e analógicos dentro de um mesmo sistema computacional embarcado, especialmente através da utilização simultânea do protocolo I2C e do conversor analógico-digital interno do microcontrolador.
+
+Dessa forma, os resultados experimentais validam o funcionamento da arquitetura implementada e demonstram a aplicação prática dos conceitos estudados em arquitetura e organização de computadores.
+
+\section{Conclusão}
+
+O presente trabalho permitiu o desenvolvimento e análise de um sistema embarcado de monitoramento ambiental utilizando sensores digitais e analógicos integrados ao microcontrolador ATmega328P.
+
+Durante a execução do projeto, foi possível implementar a aquisição de dados ambientais em tempo real através dos sensores BME280, BH1750 e MQ-135, realizando medições de temperatura, umidade relativa do ar, pressão atmosférica, luminosidade e qualidade relativa do ar.
+
+Os resultados experimentais obtidos demonstraram o funcionamento estável do sistema ao longo do período de monitoramento, validando tanto a comunicação I2C utilizada pelos sensores digitais quanto o processo de conversão analógico-digital aplicado ao MQ-135.
+
+Além disso, o projeto possibilitou observar, na prática, diversos conceitos estudados em arquitetura e organização de computadores. A estrutura desenvolvida apresentou forte relação com a arquitetura clássica de Von Neumann, uma vez que o sistema embarcado implementa:
+\begin{itemize}
+    \item dispositivos de entrada, representados pelos sensores;
+    \item processamento centralizado realizado pelo ATmega328P;
+    \item armazenamento de instruções e variáveis em memória;
+    \item dispositivos de saída, representados pelo Monitor Serial.
+\end{itemize}
+
+A integração entre sensores digitais e analógicos também demonstrou o funcionamento conjunto de diferentes formas de aquisição de dados dentro de um mesmo sistema computacional embarcado.
+
+Outro aspecto relevante observado foi a atuação do ADC de 10 bits do ATmega328P, responsável pela conversão do sinal analógico contínuo do MQ-135 em valores digitais processáveis pelo firmware. Esse processo evidenciou a importância da conversão analógico-digital em sistemas computacionais modernos, permitindo que informações provenientes do meio físico sejam interpretadas e processadas digitalmente.
+
+A utilização da linguagem Python para tratamento dos dados e geração dos gráficos também contribuiu para a análise temporal das variáveis ambientais, permitindo visualizar o comportamento do sistema ao longo do experimento realizado.
+
+Dessa forma, conclui-se que o projeto atingiu os objetivos propostos, demonstrando de maneira prática a aplicação dos conceitos de arquitetura de computadores, sistemas embarcados, comunicação digital, conversão analógico-digital e integração hardware/software em um sistema funcional de monitoramento ambiental.
+
+\renewcommand{\refname}{}
+\section{Referências}
+\begin{thebibliography}{9}
+
+\bibitem{atmega}
+ATMEL CORPORATION. \textit{ATmega328/P Datasheet Summary}. 
+Atmel-42735A-ATmega328/P\_Datasheet\_Summary-06/2016, 2016.
+
+\bibitem{bme280}
+BOSCH SENSORTEC. \textit{BME280 Data Sheet: Digital Humidity, Pressure and Temperature Sensor}. 
+Document revision 1.6, BST-BME280-DS002-15, September 2018.
+
+\bibitem{bh1750}
+ROHM SEMICONDUCTOR. \textit{BH1750FVI Ambient Light Sensor IC Series Datasheet}. 
+ROHM Co., Ltd.
+
+\bibitem{mq135}
+HANWEI ELECTRONICS CO., LTD. \textit{MQ-135 Gas Sensor Technical Data}. 
+MQ-135 Gas Sensor Datasheet.
+
+\bibitem{tanenbaum}
+TANENBAUM, A. S. \textit{Organização Estruturada de Computadores}. 6ª edição. São Paulo: Pearson, 2013.
+
+\bibitem{stallings}
+STALLINGS, William. \textit{Arquitetura e Organização de Computadores}. 8. ed. São Paulo: Pearson, 2010.
+
+\end{thebibliography}
+\end{document}

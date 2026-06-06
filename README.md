@@ -350,9 +350,11 @@ Dados exibidos no Monitor Serial
 
 Instale as seguintes bibliotecas pela IDE Arduino:
 
-* Adafruit BME280 Library
-* Adafruit Unified Sensor
-* BH1750
+*Wire.h
+*Adafruit_Sensor.h 
+*Adafruit_BME280.h 
+*BH1750.h
+*math.h
 
 ---
 

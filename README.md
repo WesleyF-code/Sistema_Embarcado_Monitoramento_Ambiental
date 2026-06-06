@@ -9,7 +9,7 @@ O sistema realiza a leitura de:
 * Pressão atmosférica
 * Altitude aproximada
 * Luminosidade ambiente
-* Qualidade relativa do ar
+* Qualidade do ar em PPM
 
 Os dados são exibidos em tempo real através do Monitor Serial da IDE Arduino.
 
@@ -57,7 +57,8 @@ Comunicação:
 
 Responsável por:
 
-* Monitoramento relativo da qualidade do ar
+* Monitoramento da qualidade do ar
+* Estimativa relativa de concentração de gases em PPM
 
 Capaz de detectar:
 
@@ -182,12 +183,14 @@ Isso significa que:
 
 A conversão segue aproximadamente a relação:
 
+```math
 ADC=\frac{V_{in}}{V_{ref}}\cdot1023
+```
 
 Onde:
 
-* $V_{in}$ = tensão analógica do MQ-135
-* $V_{ref}$ = tensão de referência do Arduino (5V)
+* (V_{in}) = tensão analógica do MQ-135
+* (V_{ref}) = tensão de referência do Arduino (5V)
 
 ---
 
@@ -195,11 +198,15 @@ Onde:
 
 O ADC possui 1024 níveis de quantização:
 
+```math
 2^{10}=1024
+```
 
 Cada nível representa aproximadamente:
 
+```math
 \frac{5V}{1024}\approx4.88mV
+```
 
 Assim:
 
@@ -209,76 +216,130 @@ Assim:
 
 ---
 
-# 🧠 Como o Código Interpreta o MQ-135
+# 🧠 Processamento do MQ-135
 
-No firmware, o Arduino realiza:
+Na versão atual do firmware, o sistema deixou de utilizar apenas valores brutos do ADC e passou a realizar uma estimativa relativa da concentração de gases em PPM (Partes por Milhão).
+
+O firmware executa:
 
 ```cpp
-int qualidadeAr = analogRead(MQ135_PIN);
+int leituraBruta = analogRead(MQ135_PIN);
+float ppm = calcularPPM(leituraBruta);
 ```
 
-A função `analogRead()`:
+O processo ocorre em etapas:
 
-1. Mede a tensão analógica no pino A0
-2. Executa a conversão ADC
-3. Retorna um valor digital entre 0 e 1023
+1. O ADC converte a tensão analógica em valor digital
+2. O firmware calcula a resistência interna do sensor ((Rs))
+3. O sistema utiliza a razão (Rs/Ro)
+4. Uma curva matemática do MQ-135 é aplicada
+5. O resultado é convertido em PPM
 
-Quanto maior o valor:
+---
 
-* Maior a tensão detectada
-* Maior a concentração relativa de gases
+# ⚙️ Autocalibração do MQ-135
+
+Durante a inicialização do sistema, o firmware executa uma etapa automática de calibração.
+
+```cpp
+Ro_MQ135 = calibrarMQ135();
+```
+
+Nessa etapa:
+
+* O sensor realiza múltiplas leituras em ambiente limpo
+* O firmware calcula uma resistência média de referência ((Ro))
+* Esse valor passa a ser utilizado nos cálculos de concentração em PPM
+
+A autocalibração melhora significativamente a estabilidade e coerência das leituras ambientais.
+
+---
+
+# 📈 Conversão para PPM
+
+O cálculo da concentração relativa de gases é realizado utilizando:
+
+```cpp
+float ppm = CURVA_A * pow(razao, CURVA_B);
+```
+
+Onde:
+
+* `CURVA_A` e `CURVA_B` são constantes experimentais do MQ-135
+* `razao` representa (Rs/Ro)
+
+Essa abordagem permite obter estimativas mais próximas de medições reais de qualidade do ar.
 
 ---
 
 # 🧪 Classificação da Qualidade do Ar
 
-O sistema utiliza uma classificação relativa baseada na leitura digital do ADC.
+O sistema utiliza classificação baseada em PPM inspirada na resolução ANVISA RE-09/2003.
 
-```cpp
-if (valor <= 250)
-```
+| Faixa PPM     | Classificação               |
+| ------------- | --------------------------- |
+| 0 – 450       | EXCELENTE (Ar Externo/Puro) |
+| 451 – 1000    | ADEQUADA (Dentro da Norma)  |
+| 1001 – 1500   | RUIM (Ventilar o ambiente)  |
+| Acima de 1500 | CRÍTICA (Risco à saúde)     |
 
-Atualmente, os valores são classificados em:
+---
 
-| Faixa ADC    | Classificação |
-| ------------ | ------------- |
-| 0 – 250      | BOA           |
-| 251 – 450    | MODERADA      |
-| 451 – 700    | RUIM          |
-| Acima de 700 | CRÍTICA       |
+# 🌡️ Classificações Ambientais
 
-Essa classificação é:
+O firmware também classifica automaticamente as demais variáveis ambientais.
 
-* Experimental
-* Relativa
-* Não calibrada em PPM
+## Temperatura
 
-O sistema atualmente NÃO mede concentração absoluta de gases.
+| Faixa       | Classificação |
+| ----------- | ------------- |
+| ≤ 15°C      | FRIO          |
+| 16°C – 28°C | MODERADO      |
+| 29°C – 35°C | QUENTE        |
+| > 35°C      | MUITO QUENTE  |
 
-Ele realiza:
+## Umidade
 
-* Monitoramento relativo da qualidade do ar
-* Detecção de aumento de poluentes
-* Identificação de alterações ambientais
+| Faixa     | Classificação |
+| --------- | ------------- |
+| < 30%     | SECA          |
+| 30% – 60% | CONFORTÁVEL   |
+| 61% – 80% | ÚMIDA         |
+| > 80%     | MUITO ÚMIDA   |
+
+## Pressão Atmosférica
+
+| Faixa           | Classificação |
+| --------------- | ------------- |
+| < 1000 hPa      | BAIXA         |
+| 1000 – 1020 hPa | NORMAL        |
+| > 1020 hPa      | ALTA          |
+
+## Luminosidade
+
+| Faixa          | Classificação |
+| -------------- | ------------- |
+| < 50 lux       | ESCURO        |
+| 50 – 300 lux   | MODERADO      |
+| 301 – 1000 lux | CLARO         |
+| > 1000 lux     | MUITO CLARO   |
 
 ---
 
 # 🔄 Fluxo Completo do Sistema
 
 ```text
-Gases no ambiente
+Sensores ambientais
 ↓
-Variação da resistência do MQ-135
+Aquisição dos sinais
 ↓
-Alteração da tensão analógica
+Comunicação I2C e ADC
 ↓
-ADC do ATmega328P converte tensão em valor digital
+ATmega328P processa os dados
 ↓
-analogRead() retorna valor de 0–1023
+Firmware executa cálculos e classificações
 ↓
-Firmware interpreta os dados
-↓
-Sistema classifica a qualidade do ar
+Estimativa de PPM do MQ-135
 ↓
 Dados exibidos no Monitor Serial
 ```
@@ -311,7 +372,13 @@ Instale as seguintes bibliotecas pela IDE Arduino:
 
 ✅ Conversão analógico-digital via ADC
 
-✅ Monitoramento relativo da qualidade do ar
+✅ Autocalibração do MQ-135
+
+✅ Estimativa de concentração de gases em PPM
+
+✅ Classificação ambiental automática
+
+✅ Monitoramento da qualidade do ar
 
 ✅ Exibição em tempo real no Monitor Serial
 
@@ -320,16 +387,29 @@ Instale as seguintes bibliotecas pela IDE Arduino:
 # 📟 Exemplo de Saída Serial
 
 ```text
+====================================
+ SISTEMA DE MONITORAMENTO AMBIENTAL
+====================================
+
+BME280 inicializado com sucesso!
+BH1750 inicializado com sucesso!
+MQ-135 inicializado com sucesso!
+
+Calibrando MQ-135 no ar limpo...
+Concluido!
+Resistencia Base (Ro) calculada: 9.87 kOhm
+
 ========== DADOS AMBIENTAIS ==========
 
-Temperatura: 27.4 C
-Umidade: 63.2 %
-Pressao: 1008.4 hPa
-Altitude Aproximada: 42.7 m
+Temperatura: 30.67 C [QUENTE]
+Umidade: 63.86 % [UMIDA]
+Pressao: 1009.58 hPa [NORMAL]
+Altitude Aproximada: 37.81 m
 
-Luminosidade: 315.0 lux
+Luminosidade: 6.67 lux [ESCURO]
 
-Qualidade do Ar: 412 [MODERADA]
+Qualidade do Ar: 412.35 PPM
+[EXCELENTE (Ar Externo/Puro)]
 
 ======================================
 ```
@@ -349,6 +429,8 @@ Qualidade do Ar: 412 [MODERADA]
 * Sensoriamento digital
 * Processamento de sinais analógicos
 * Conversão de sinais físicos em dados digitais
+* Processamento matemático embarcado
+* Estimativa de concentração gasosa em PPM
 
 ---
 
@@ -361,6 +443,8 @@ O firmware foi desenvolvido utilizando:
 * Comunicação serial para supervisão
 * Leitura periódica de dados ambientais
 * Processamento digital de sinais analógicos
+* Conversão matemática para estimativa em PPM
+* Classificação automática das variáveis ambientais
 
 ---
 
@@ -388,60 +472,13 @@ No projeto desenvolvido:
 
 ---
 
-# 🔬 Comparativo Arquitetural
-
-## Arquitetura Clássica de Von Neumann
-
-Fluxo tradicional:
-
-```text
-Entrada
-↓
-Processamento
-↓
-Memória
-↓
-Saída
-```
-
----
-
-## Arquitetura Aplicada no Projeto
-
-```text
-Sensores
-↓
-Aquisição de sinais
-↓
-Conversão ADC/I2C
-↓
-ATmega328P processa os dados
-↓
-Firmware interpreta informações
-↓
-Saída serial em tempo real
-```
-
----
-
-# 🧩 Similaridades com Von Neumann
-
-O sistema segue os princípios fundamentais de Von Neumann:
-
-✅ Dados e instruções processados pela mesma CPU
-✅ Uso de memória compartilhada
-✅ Entrada e saída controladas pelo processador
-✅ Execução sequencial do firmware
-✅ Processamento centralizado no ATmega328P
-
----
-
 # 🚀 Objetivo do Projeto
 
 Desenvolver uma estação embarcada de monitoramento ambiental capaz de:
 
 * Adquirir dados ambientais em tempo real
 * Processar sinais digitais e analógicos
+* Estimar concentração relativa de gases em PPM
 * Demonstrar integração hardware/software
 * Aplicar conceitos de arquitetura de computadores
 * Implementar aquisição e tratamento de dados em sistemas embarcados
